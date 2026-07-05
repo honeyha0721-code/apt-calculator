@@ -5,3 +5,8 @@
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Vite
+node_modules/
+dist/
+.pnpm-store/
