@@ -28,9 +28,7 @@
 
     <main>
       <section class="hero" aria-labelledby="page-title">
-        <p class="eyebrow">LOAN CALCULATOR</p>
-        <h1 id="page-title">대출, 숫자로 먼저<br class="mobile-break" /> 확인해 보세요.</h1>
-        <p>예상 월 납입금부터 총이자까지 한눈에 계산해 드려요.</p>
+        <h1 id="page-title">대출, 매달 얼마씩<br class="mobile-break" /> 갚아야 할까?</h1>
       </section>
 
       <section class="calculator-layout" aria-label="대출 계산기">
@@ -39,7 +37,6 @@
             <span class="step">01</span>
             <div>
               <h2>대출 조건</h2>
-              <p>알고 있는 조건만 차근차근 입력하세요.</p>
             </div>
           </div>
 
@@ -47,23 +44,17 @@
             <div class="field field-wide">
               <label for="loan-amount">대출금액</label>
               <div class="input-wrap">
-                <input id="loan-amount" name="loanAmount" type="text" inputmode="numeric" autocomplete="off" value="300,000,000" aria-describedby="amount-korean amount-error" />
-                <span class="input-suffix">원</span>
+                <input id="loan-amount" name="loanAmount" type="number" inputmode="decimal" autocomplete="off" min="0.01" max="1000" step="0.01" value="6" aria-describedby="amount-error" />
+                <span class="input-suffix">억원</span>
               </div>
-              <div class="field-meta">
-                <span id="amount-korean">3억원</span>
-                <span class="error-message" id="amount-error"></span>
-              </div>
+              <span class="error-message" id="amount-error"></span>
             </div>
 
             <div class="field">
               <label for="loan-term">대출기간</label>
-              <div class="compound-input">
-                <input id="loan-term" name="loanTerm" type="number" inputmode="numeric" min="1" max="600" value="30" aria-describedby="term-error" />
-                <select id="term-unit" name="termUnit" aria-label="대출기간 단위">
-                  <option value="years" selected>년</option>
-                  <option value="months">개월</option>
-                </select>
+              <div class="input-wrap">
+                <input id="loan-term" name="loanTerm" type="number" inputmode="numeric" min="1" max="50" value="30" aria-describedby="term-error" />
+                <span class="input-suffix">년</span>
               </div>
               <span class="error-message" id="term-error"></span>
             </div>
@@ -71,7 +62,7 @@
             <div class="field">
               <label for="interest-rate">연 대출금리</label>
               <div class="input-wrap">
-                <input id="interest-rate" name="interestRate" type="number" inputmode="decimal" min="0" max="50" step="0.01" value="4.2" aria-describedby="rate-error" />
+                <input id="interest-rate" name="interestRate" type="number" inputmode="decimal" min="0" max="50" step="0.01" value="5" aria-describedby="rate-error" />
                 <span class="input-suffix">%</span>
               </div>
               <span class="error-message" id="rate-error"></span>
@@ -83,25 +74,23 @@
                 <label class="method-option">
                   <input type="radio" name="repaymentMethod" value="equal-payment" checked />
                   <span>
-                    <strong>원리금균등</strong>
-                    <small>매달 같은 금액</small>
+                    <strong>원리금균등상환</strong>
                   </span>
                 </label>
                 <label class="method-option">
                   <input type="radio" name="repaymentMethod" value="equal-principal" />
                   <span>
-                    <strong>원금균등</strong>
-                    <small>갈수록 부담 감소</small>
+                    <strong>원금균등상환</strong>
                   </span>
                 </label>
                 <label class="method-option">
                   <input type="radio" name="repaymentMethod" value="bullet" />
                   <span>
-                    <strong>만기일시</strong>
-                    <small>만기에 원금 상환</small>
+                    <strong>만기일시상환</strong>
                   </span>
                 </label>
               </div>
+              <span class="error-message" id="method-error"></span>
             </fieldset>
           </div>
 
@@ -115,168 +104,101 @@
           <div class="panel-heading result-heading">
             <span class="step">02</span>
             <div>
-              <h2 id="result-title">예상 계산 결과</h2>
-              <p id="result-condition">3억원 · 30년 · 연 4.2%</p>
+              <h2 id="result-title">계산 결과</h2>
             </div>
           </div>
 
           <div class="payment-highlight">
-            <span id="payment-label">매월 상환액</span>
-            <strong id="monthly-payment">1,467,418<small>원</small></strong>
-            <p id="payment-note">원금과 이자를 합쳐 매달 납부하는 예상 금액입니다.</p>
+            <span id="payment-label">월 상환액</span>
+            <strong id="monthly-payment">—</strong>
           </div>
 
           <dl class="summary-list">
             <div>
               <dt>대출 원금</dt>
-              <dd id="total-principal">300,000,000원</dd>
+              <dd id="total-principal">—</dd>
             </div>
             <div>
               <dt>총 대출이자</dt>
-              <dd id="total-interest">228,270,565원</dd>
+              <dd id="total-interest">—</dd>
             </div>
             <div class="summary-total">
               <dt>총 상환금액</dt>
-              <dd id="total-payment">528,270,565원</dd>
+              <dd id="total-payment">—</dd>
             </div>
           </dl>
 
           <div class="ratio-block">
             <div class="ratio-labels">
-              <span><i class="principal-color"></i>원금 <b id="principal-ratio">56.8%</b></span>
-              <span><i class="interest-color"></i>이자 <b id="interest-ratio">43.2%</b></span>
+              <span><i class="principal-color"></i>원금 <b id="principal-ratio">—</b></span>
+              <span><i class="interest-color"></i>이자 <b id="interest-ratio">—</b></span>
             </div>
             <div class="ratio-bar" aria-label="원금과 이자 비율">
               <span id="principal-bar"></span>
               <span id="interest-bar"></span>
             </div>
           </div>
+
+          <aside class="result-notice" aria-label="계산기 이용 안내">
+            <span class="result-notice-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg>
+            </span>
+            <p>실제 상환액은 금융기관별 날짜 계산 방식, 원 단위 처리 방식, 중도 상환 여부 등에 따라 달라질 수 있습니다. 대략적으로만 참고해주세요.</p>
+          </aside>
         </section>
       </section>
 
       <section class="guide-section" aria-labelledby="guide-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">QUICK GUIDE</p>
-            <h2 id="guide-title">어떤 상환방식이 다를까요?</h2>
+        <details class="guide-toggle">
+          <summary>
+            <h2 id="guide-title">각 상환 방식의 특징</h2>
+          </summary>
+          <div class="guide-grid">
+            <article class="guide-item">
+              <span>01</span>
+              <strong>원리금균등상환</strong>
+              <p>매달 동일 금액 상환</p>
+            </article>
+            <article class="guide-item">
+              <span>02</span>
+              <strong>원금균등상환</strong>
+              <p>초기 부담은 크지만 총 이자 절감</p>
+            </article>
+            <article class="guide-item">
+              <span>03</span>
+              <strong>만기일시상환</strong>
+              <p>이자만 납부 후 만기에 원금 상환</p>
+            </article>
           </div>
-        </div>
-        <div class="guide-grid">
-          <article>
-            <span>01</span>
-            <h3>원리금균등상환</h3>
-            <p>원금과 이자를 합한 월 납입액이 일정해 자금 계획을 세우기 편합니다.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>원금균등상환</h3>
-            <p>같은 원금을 매달 갚아 초기 부담은 크지만 총이자는 상대적으로 적습니다.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>만기일시상환</h3>
-            <p>기간 중에는 이자만 내고 만기에 원금을 한꺼번에 상환합니다.</p>
-          </article>
-        </div>
+        </details>
       </section>
 
       <section class="policy-section" aria-labelledby="policy-title">
-        <div class="section-heading policy-heading">
-          <div>
-            <p class="eyebrow">POLICY REFERENCE</p>
-            <h2 id="policy-title">현재 부동산 대출 정책 참고</h2>
-          </div>
-          <span class="policy-date">2026. 07. 05. 확인</span>
+        <div class="section-heading">
+          <h2 id="policy-title">주택 가격대별 주택담보대출 한도</h2>
         </div>
-
-        <div class="policy-summary">
-          <span class="policy-summary-icon" aria-hidden="true">i</span>
-          <div>
-            <strong>실제 대출한도는 한 가지 기준으로 정해지지 않아요.</strong>
-            <p>LTV·DSR·주택가격별 총액 한도와 금융회사 심사 결과 중 가장 낮은 금액이 적용될 수 있습니다.</p>
+        <div class="policy-card">
+          <div class="limit-grid" aria-label="주택가격별 주택담보대출 최대한도">
+            <div>
+              <span>15억원 이하</span>
+              <strong><small>최대</small><b>6억원</b></strong>
+            </div>
+            <div>
+              <span>15억원 초과~25억원 이하</span>
+              <strong><small>최대</small><b>4억원</b></strong>
+            </div>
+            <div>
+              <span>25억원 초과</span>
+              <strong><small>최대</small><b>2억원</b></strong>
+            </div>
           </div>
-        </div>
-
-        <div class="policy-grid">
-          <article class="policy-card policy-card-wide">
-            <div class="policy-card-top">
-              <span class="policy-number">01</span>
-              <span class="policy-tag">수도권·규제지역</span>
-            </div>
-            <h3>주택가격별 구입목적 주담대 한도</h3>
-            <div class="limit-grid" aria-label="주택가격별 주택담보대출 최대한도">
-              <div>
-                <span>15억원 이하</span>
-                <strong>최대 6억원</strong>
-              </div>
-              <div>
-                <span>15억원 초과~25억원 이하</span>
-                <strong>최대 4억원</strong>
-              </div>
-              <div>
-                <span>25억원 초과</span>
-                <strong>최대 2억원</strong>
-              </div>
-            </div>
-            <p class="policy-footnote">중도금대출은 총액 한도 대상에서 제외되며, 이주비대출은 주택가격과 관계없이 최대 6억원 한도가 적용됩니다.</p>
-          </article>
-
-          <article class="policy-card">
-            <div class="policy-card-top">
-              <span class="policy-number">02</span>
-              <span class="policy-tag">담보인정비율</span>
-            </div>
-            <h3>LTV 상한</h3>
-            <div class="policy-metric">
-              <div><span>규제지역</span><strong>40%</strong></div>
-              <div><span>비규제지역</span><strong>70%</strong></div>
-            </div>
-            <p>무주택자와 처분조건부 1주택자의 주택구입 목적 기준입니다. 보유주택 수와 대출 목적에 따라 제한이 달라집니다.</p>
-          </article>
-
-          <article class="policy-card">
-            <div class="policy-card-top">
-              <span class="policy-number">03</span>
-              <span class="policy-tag">상환능력 심사</span>
-            </div>
-            <h3>스트레스 DSR</h3>
-            <p class="policy-lead">미래 금리 상승 가능성을 반영한 가산금리로 대출한도를 계산합니다.</p>
-            <p>가산금리는 실제 납부금리에 더해지는 것이 아니며, 소득과 기존 대출에 따라 계산기 결과보다 한도가 낮아질 수 있습니다.</p>
-          </article>
-
-          <article class="policy-card">
-            <div class="policy-card-top">
-              <span class="policy-number">04</span>
-              <span class="policy-tag">2026년 4월 17일 시행</span>
-            </div>
-            <h3>다주택자 만기연장 제한</h3>
-            <p class="policy-lead">다주택자가 보유한 수도권·규제지역 아파트 주담대는 만기연장이 원칙적으로 제한됩니다.</p>
-            <p>임차인 보호, 법령상 의무, 공익 목적 등 불가피한 사유에는 예외가 적용될 수 있습니다.</p>
-          </article>
-        </div>
-
-        <div class="policy-sources">
-          <p>정책은 신청 시점과 개인 조건에 따라 달라질 수 있으니 실행 전 금융회사에서 다시 확인해 주세요.</p>
-          <div>
-            <a href="https://www.fsc.go.kr/no040101?cnId=2914" target="_blank" rel="noopener noreferrer">주택가격별 한도·DSR 원문</a>
-            <a href="https://www.fsc.go.kr/no040000?cnId=2880" target="_blank" rel="noopener noreferrer">LTV 정책 원문</a>
-            <a href="https://www.fsc.go.kr/po010101/86606" target="_blank" rel="noopener noreferrer">2026년 가계부채 관리방안</a>
-          </div>
+          <p class="policy-footnote">중도금대출은 본 한도 적용 대상이 아닙니다.</p>
         </div>
       </section>
 
-      <aside class="notice" aria-label="계산기 이용 안내">
-        <strong>꼭 확인해 주세요</strong>
-        <p>계산 결과는 월 단위 단순 계산을 적용한 참고용입니다. 실제 상환액은 금융기관의 일수 계산, 납입일, 원 단위 처리 방식 및 중도상환 여부에 따라 달라질 수 있습니다.</p>
-      </aside>
-
       <section class="schedule-section" aria-labelledby="schedule-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">PAYMENT SCHEDULE</p>
-            <h2 id="schedule-title">월별 상환 일정</h2>
-          </div>
-          <button class="text-button" id="schedule-toggle" type="button" aria-expanded="false">전체 일정 보기</button>
+        <div class="section-heading schedule-heading">
+          <h2 id="schedule-title">기간별 원리금 상환액</h2>
         </div>
         <div class="table-card">
           <div class="table-scroll">
@@ -284,16 +206,23 @@
               <thead>
                 <tr>
                   <th scope="col">회차</th>
-                  <th scope="col">상환금액</th>
+                  <th scope="col">상환액</th>
                   <th scope="col">원금</th>
                   <th scope="col">이자</th>
                   <th scope="col">남은 원금</th>
                 </tr>
               </thead>
-              <tbody id="schedule-body"></tbody>
+              <tbody id="schedule-body">
+                <tr class="empty-row">
+                  <td colspan="5">상환방법을 선택하고 계산 결과를 확인해 주세요.</td>
+                </tr>
+              </tbody>
             </table>
           </div>
-          <p class="table-caption" id="schedule-caption">처음 12개월의 예상 일정입니다.</p>
+          <div class="table-footer">
+            <p class="table-caption" id="schedule-caption">첫 24개월 동안의 원리금 상환액입니다.</p>
+            <button class="text-button" id="schedule-toggle" type="button" aria-expanded="false" hidden>전체 기간 펼쳐 보기</button>
+          </div>
         </div>
       </section>
     </main>

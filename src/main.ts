@@ -1,13 +1,11 @@
 import { calculateLoan, type LoanResult, type PaymentRow, type RepaymentMethod } from "./calculator";
 
-type TermUnit = "years" | "months";
-
 interface FormValues {
   principal: number;
   term: number;
   annualRate: number;
   months: number;
-  method: RepaymentMethod;
+  method: RepaymentMethod | null;
 }
 
 function requiredElement<T extends Element>(selector: string): T {
@@ -18,14 +16,12 @@ function requiredElement<T extends Element>(selector: string): T {
 
 const form = requiredElement<HTMLFormElement>("#loan-form");
 const amountInput = requiredElement<HTMLInputElement>("#loan-amount");
-const amountKorean = requiredElement<HTMLElement>("#amount-korean");
 const termInput = requiredElement<HTMLInputElement>("#loan-term");
-const termUnit = requiredElement<HTMLSelectElement>("#term-unit");
 const rateInput = requiredElement<HTMLInputElement>("#interest-rate");
+const resultPanel = requiredElement<HTMLElement>("#result-panel");
 const scheduleBody = requiredElement<HTMLTableSectionElement>("#schedule-body");
 const scheduleToggle = requiredElement<HTMLButtonElement>("#schedule-toggle");
 const scheduleCaption = requiredElement<HTMLElement>("#schedule-caption");
-const resultPanel = requiredElement<HTMLElement>("#result-panel");
 
 let currentSchedule: PaymentRow[] = [];
 let showFullSchedule = false;
@@ -34,25 +30,12 @@ const wonFormatter = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 }
 const percentFormatter = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 });
 
 function parseAmount(value: string): number {
-  return Number(value.replace(/[^0-9]/g, ""));
+  if (!value.trim()) return 0;
+  return Number(value) * 100_000_000;
 }
 
 function formatWon(value: number): string {
   return `${wonFormatter.format(Math.round(value))}원`;
-}
-
-function formatKoreanAmount(value: number): string {
-  if (!value) return "";
-
-  const eok = Math.floor(value / 100_000_000);
-  const man = Math.floor((value % 100_000_000) / 10_000);
-  const won = value % 10_000;
-  const parts: string[] = [];
-
-  if (eok) parts.push(`${wonFormatter.format(eok)}억`);
-  if (man) parts.push(`${wonFormatter.format(man)}만`);
-  if (won) parts.push(wonFormatter.format(won));
-  return `${parts.join(" ")}원`;
 }
 
 function setError(input: HTMLInputElement, errorId: string, message: string): void {
@@ -60,53 +43,48 @@ function setError(input: HTMLInputElement, errorId: string, message: string): vo
   requiredElement<HTMLElement>(`#${errorId}`).textContent = message;
 }
 
-function getSelectedMethod(): RepaymentMethod {
+function setMethodError(message: string): void {
+  requiredElement<HTMLElement>("#method-error").textContent = message;
+}
+
+function getSelectedMethod(): RepaymentMethod | null {
   const selected = form.querySelector<HTMLInputElement>('input[name="repaymentMethod"]:checked');
-  if (!selected) throw new Error("상환방법을 선택해 주세요.");
-  return selected.value as RepaymentMethod;
+  return selected ? selected.value as RepaymentMethod : null;
 }
 
 function getValues(): FormValues {
   const principal = parseAmount(amountInput.value);
   const term = Number(termInput.value);
-  const annualRate = Number(rateInput.value);
-  const unit = termUnit.value as TermUnit;
-  const months = unit === "years" ? term * 12 : term;
+  const annualRate = rateInput.value.trim() ? Number(rateInput.value) : Number.NaN;
+  const months = term * 12;
 
   return { principal, term, annualRate, months, method: getSelectedMethod() };
 }
 
 function validate(values: FormValues): boolean {
   const amountMessage = values.principal < 1_000_000 || values.principal > 100_000_000_000
-    ? "100만원 이상 1,000억원 이하로 입력해 주세요."
+    ? "0.01억원 이상 1,000억원 이하로 입력해 주세요."
     : "";
-  const termMessage = !Number.isInteger(values.months) || values.months < 1 || values.months > 600
-    ? "1개월 이상 50년 이하로 입력해 주세요."
+  const termMessage = !Number.isInteger(values.term) || values.term < 1 || values.term > 50
+    ? "1년 이상 50년 이하로 입력해 주세요."
     : "";
   const rateMessage = !Number.isFinite(values.annualRate) || values.annualRate < 0 || values.annualRate > 50
     ? "0% 이상 50% 이하로 입력해 주세요."
     : "";
+  const methodMessage = values.method ? "" : "상환방법을 선택해 주세요.";
 
   setError(amountInput, "amount-error", amountMessage);
   setError(termInput, "term-error", termMessage);
   setError(rateInput, "rate-error", rateMessage);
-  return !(amountMessage || termMessage || rateMessage);
-}
-
-function methodLabel(method: RepaymentMethod): string {
-  const labels: Record<RepaymentMethod, string> = {
-    "equal-payment": "원리금균등",
-    "equal-principal": "원금균등",
-    bullet: "만기일시",
-  };
-  return labels[method];
+  setMethodError(methodMessage);
+  return !(amountMessage || termMessage || rateMessage || methodMessage);
 }
 
 function renderSchedule(): void {
-  const rows = showFullSchedule ? currentSchedule : currentSchedule.slice(0, 12);
-  scheduleBody.innerHTML = rows.map((item) => `
+  const visibleRows = showFullSchedule ? currentSchedule : currentSchedule.slice(0, 24);
+  scheduleBody.innerHTML = visibleRows.map((item) => `
     <tr>
-      <td>${item.month}회</td>
+      <td>${item.month}개월</td>
       <td>${formatWon(item.payment)}</td>
       <td>${formatWon(item.principal)}</td>
       <td>${formatWon(item.interest)}</td>
@@ -114,39 +92,18 @@ function renderSchedule(): void {
     </tr>
   `).join("");
 
-  const hasMore = currentSchedule.length > 12;
+  const hasMore = currentSchedule.length > 24;
   scheduleToggle.hidden = !hasMore;
-  scheduleToggle.textContent = showFullSchedule ? "간단히 보기" : "전체 일정 보기";
+  scheduleToggle.textContent = showFullSchedule ? "간단히 보기" : "전체 기간 펼쳐 보기";
   scheduleToggle.setAttribute("aria-expanded", String(showFullSchedule));
   scheduleCaption.textContent = showFullSchedule
-    ? `전체 ${currentSchedule.length}개월의 예상 일정입니다.`
+    ? `전체 ${currentSchedule.length}개월의 원리금 상환액입니다.`
     : hasMore
-      ? `처음 12개월의 예상 일정입니다. 전체 ${currentSchedule.length}개월 중 일부만 표시했어요.`
-      : `전체 ${currentSchedule.length}개월의 예상 일정입니다.`;
+      ? `첫 24개월 동안의 원리금 상환액입니다. 전체 ${currentSchedule.length}개월의 원리금 상환액을 펼쳐볼 수 있어요.`
+      : `전체 ${currentSchedule.length}개월의 원리금 상환액입니다.`;
 }
 
 function renderResult(values: FormValues, result: LoanResult): void {
-  const unit = termUnit.value as TermUnit;
-  const termText = unit === "years" ? `${values.term}년` : `${values.term}개월`;
-  requiredElement<HTMLElement>("#result-condition").textContent =
-    `${formatKoreanAmount(values.principal)} · ${termText} · 연 ${values.annualRate}% · ${methodLabel(values.method)}`;
-
-  const paymentLabel = requiredElement<HTMLElement>("#payment-label");
-  const paymentNote = requiredElement<HTMLElement>("#payment-note");
-
-  if (values.method === "equal-principal") {
-    paymentLabel.textContent = "첫 달 상환액";
-    paymentNote.textContent = "매달 갚는 원금은 같고 이자가 줄어 상환액도 점차 감소합니다.";
-  } else if (values.method === "bullet") {
-    const finalPayment = result.schedule.at(-1);
-    if (!finalPayment) throw new Error("마지막 상환 정보를 찾을 수 없습니다.");
-    paymentLabel.textContent = "매월 납부이자";
-    paymentNote.textContent = `마지막 달에는 원금과 이자를 합쳐 ${formatWon(finalPayment.payment)}을 상환합니다.`;
-  } else {
-    paymentLabel.textContent = "매월 상환액";
-    paymentNote.textContent = "원금과 이자를 합쳐 매달 납부하는 예상 금액입니다.";
-  }
-
   requiredElement<HTMLElement>("#monthly-payment").innerHTML =
     `${wonFormatter.format(Math.round(result.monthlyPayment))}<small>원</small>`;
   requiredElement<HTMLElement>("#total-principal").textContent = formatWon(values.principal);
@@ -167,9 +124,14 @@ function renderResult(values: FormValues, result: LoanResult): void {
 
 function calculateAndRender({ shouldScroll = false } = {}): void {
   const values = getValues();
-  if (!validate(values)) return;
+  if (!validate(values) || !values.method) return;
 
-  const result = calculateLoan(values);
+  const result = calculateLoan({
+    principal: values.principal,
+    annualRate: values.annualRate,
+    months: values.months,
+    method: values.method,
+  });
   renderResult(values, result);
 
   if (shouldScroll && window.matchMedia("(max-width: 900px)").matches) {
@@ -177,11 +139,11 @@ function calculateAndRender({ shouldScroll = false } = {}): void {
   }
 }
 
-amountInput.addEventListener("input", () => {
-  const amount = parseAmount(amountInput.value);
-  amountInput.value = amount ? wonFormatter.format(amount) : "";
-  amountKorean.textContent = formatKoreanAmount(amount);
-  setError(amountInput, "amount-error", "");
+amountInput.addEventListener("input", () => setError(amountInput, "amount-error", ""));
+termInput.addEventListener("input", () => setError(termInput, "term-error", ""));
+rateInput.addEventListener("input", () => setError(rateInput, "rate-error", ""));
+form.querySelectorAll<HTMLInputElement>('input[name="repaymentMethod"]').forEach((input) => {
+  input.addEventListener("change", () => setMethodError(""));
 });
 
 form.addEventListener("submit", (event) => {
@@ -193,5 +155,3 @@ scheduleToggle.addEventListener("click", () => {
   showFullSchedule = !showFullSchedule;
   renderSchedule();
 });
-
-calculateAndRender();
