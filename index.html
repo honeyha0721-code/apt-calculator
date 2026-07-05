@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="대출 원금과 금리, 기간, 상환방식을 입력해 월 상환액과 총이자를 확인하는 원리금 계산기" />
+    <meta name="theme-color" content="#f6f7fb" />
+    <title>원리금 계산기</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./script.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="원리금 계산기 처음으로">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img">
+            <path d="M4 10.5 12 4l8 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-8Z" />
+            <path d="M9 20v-6h6v6" />
+          </svg>
+        </span>
+        <span>원리금 계산기</span>
+      </a>
+      <span class="privacy-pill">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        입력값은 저장되지 않아요
+      </span>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">LOAN CALCULATOR</p>
+        <h1 id="page-title">대출, 숫자로 먼저<br class="mobile-break" /> 확인해 보세요.</h1>
+        <p>예상 월 납입금부터 총이자까지 한눈에 계산해 드려요.</p>
+      </section>
+
+      <section class="calculator-layout" aria-label="대출 계산기">
+        <form class="panel input-panel" id="loan-form" novalidate>
+          <div class="panel-heading">
+            <span class="step">01</span>
+            <div>
+              <h2>대출 조건</h2>
+              <p>알고 있는 조건만 차근차근 입력하세요.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field field-wide">
+              <label for="loan-amount">대출금액</label>
+              <div class="input-wrap">
+                <input id="loan-amount" name="loanAmount" type="text" inputmode="numeric" autocomplete="off" value="300,000,000" aria-describedby="amount-korean amount-error" />
+                <span class="input-suffix">원</span>
+              </div>
+              <div class="field-meta">
+                <span id="amount-korean">3억원</span>
+                <span class="error-message" id="amount-error"></span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="loan-term">대출기간</label>
+              <div class="compound-input">
+                <input id="loan-term" name="loanTerm" type="number" inputmode="numeric" min="1" max="600" value="30" aria-describedby="term-error" />
+                <select id="term-unit" name="termUnit" aria-label="대출기간 단위">
+                  <option value="years" selected>년</option>
+                  <option value="months">개월</option>
+                </select>
+              </div>
+              <span class="error-message" id="term-error"></span>
+            </div>
+
+            <div class="field">
+              <label for="interest-rate">연 대출금리</label>
+              <div class="input-wrap">
+                <input id="interest-rate" name="interestRate" type="number" inputmode="decimal" min="0" max="50" step="0.01" value="4.2" aria-describedby="rate-error" />
+                <span class="input-suffix">%</span>
+              </div>
+              <span class="error-message" id="rate-error"></span>
+            </div>
+
+            <fieldset class="field field-wide method-field">
+              <legend>상환방법</legend>
+              <div class="method-options">
+                <label class="method-option">
+                  <input type="radio" name="repaymentMethod" value="equal-payment" checked />
+                  <span>
+                    <strong>원리금균등</strong>
+                    <small>매달 같은 금액</small>
+                  </span>
+                </label>
+                <label class="method-option">
+                  <input type="radio" name="repaymentMethod" value="equal-principal" />
+                  <span>
+                    <strong>원금균등</strong>
+                    <small>갈수록 부담 감소</small>
+                  </span>
+                </label>
+                <label class="method-option">
+                  <input type="radio" name="repaymentMethod" value="bullet" />
+                  <span>
+                    <strong>만기일시</strong>
+                    <small>만기에 원금 상환</small>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <button class="primary-button" type="submit">
+            계산 결과 보기
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
+        </form>
+
+        <section class="panel result-panel" id="result-panel" aria-labelledby="result-title" aria-live="polite">
+          <div class="panel-heading result-heading">
+            <span class="step">02</span>
+            <div>
+              <h2 id="result-title">예상 계산 결과</h2>
+              <p id="result-condition">3억원 · 30년 · 연 4.2%</p>
+            </div>
+          </div>
+
+          <div class="payment-highlight">
+            <span id="payment-label">매월 상환액</span>
+            <strong id="monthly-payment">1,467,418<small>원</small></strong>
+            <p id="payment-note">원금과 이자를 합쳐 매달 납부하는 예상 금액입니다.</p>
+          </div>
+
+          <dl class="summary-list">
+            <div>
+              <dt>대출 원금</dt>
+              <dd id="total-principal">300,000,000원</dd>
+            </div>
+            <div>
+              <dt>총 대출이자</dt>
+              <dd id="total-interest">228,270,565원</dd>
+            </div>
+            <div class="summary-total">
+              <dt>총 상환금액</dt>
+              <dd id="total-payment">528,270,565원</dd>
+            </div>
+          </dl>
+
+          <div class="ratio-block">
+            <div class="ratio-labels">
+              <span><i class="principal-color"></i>원금 <b id="principal-ratio">56.8%</b></span>
+              <span><i class="interest-color"></i>이자 <b id="interest-ratio">43.2%</b></span>
+            </div>
+            <div class="ratio-bar" aria-label="원금과 이자 비율">
+              <span id="principal-bar"></span>
+              <span id="interest-bar"></span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="schedule-section" aria-labelledby="schedule-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PAYMENT SCHEDULE</p>
+            <h2 id="schedule-title">월별 상환 일정</h2>
+          </div>
+          <button class="text-button" id="schedule-toggle" type="button" aria-expanded="false">전체 일정 보기</button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">회차</th>
+                  <th scope="col">상환금액</th>
+                  <th scope="col">원금</th>
+                  <th scope="col">이자</th>
+                  <th scope="col">남은 원금</th>
+                </tr>
+              </thead>
+              <tbody id="schedule-body"></tbody>
+            </table>
+          </div>
+          <p class="table-caption" id="schedule-caption">처음 12개월의 예상 일정입니다.</p>
+        </div>
+      </section>
+
+      <section class="guide-section" aria-labelledby="guide-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">QUICK GUIDE</p>
+            <h2 id="guide-title">어떤 상환방식이 다를까요?</h2>
+          </div>
+        </div>
+        <div class="guide-grid">
+          <article>
+            <span>01</span>
+            <h3>원리금균등상환</h3>
+            <p>원금과 이자를 합한 월 납입액이 일정해 자금 계획을 세우기 편합니다.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>원금균등상환</h3>
+            <p>같은 원금을 매달 갚아 초기 부담은 크지만 총이자는 상대적으로 적습니다.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>만기일시상환</h3>
+            <p>기간 중에는 이자만 내고 만기에 원금을 한꺼번에 상환합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <aside class="notice" aria-label="계산기 이용 안내">
+        <strong>꼭 확인해 주세요</strong>
+        <p>계산 결과는 월 단위 단순 계산을 적용한 참고용입니다. 실제 상환액은 금융기관의 일수 계산, 납입일, 원 단위 처리 방식 및 중도상환 여부에 따라 달라질 수 있습니다.</p>
+      </aside>
+    </main>
+
+    <footer>
+      <p>원리금 계산기 · 모든 계산은 사용자의 기기에서 처리됩니다.</p>
+    </footer>
+  </body>
+</html>
