@@ -837,6 +837,10 @@ footer {
   gap: 24px 16px;
 }
 
+.buy-form-grid > .field {
+  min-width: 0;
+}
+
 .buy-form-grid > .field:not(.field-wide) .numbered-label {
   min-height: 42px;
   align-items: center;
@@ -896,8 +900,18 @@ footer {
   overflow-wrap: break-word;
 }
 
+.legal-fee-field {
+  position: relative;
+  padding-bottom: 24px;
+}
+
 .legal-fee-field .field-warning {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: calc(200% + 16px);
+  max-width: none;
+  margin: 0 2px;
   white-space: nowrap;
 }
 
@@ -1507,10 +1521,13 @@ footer {
 
   .legal-fee-field {
     margin-bottom: 14px;
+    padding-bottom: 0;
   }
 
   .legal-fee-field .field-warning {
+    position: static;
     width: 100%;
+    margin: 2px 2px 0;
     white-space: normal;
   }
 
