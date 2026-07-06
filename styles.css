@@ -915,6 +915,10 @@ footer {
   white-space: nowrap;
 }
 
+.acquisition-tax-field .field-warning {
+  margin-top: 5px;
+}
+
 .has-field-warning .error-message:empty {
   min-height: 5px;
   padding-top: 0;
@@ -1527,7 +1531,7 @@ footer {
   .legal-fee-field .field-warning {
     position: static;
     width: 100%;
-    margin: 2px 2px 0;
+    margin: 5px 2px 0;
     white-space: normal;
   }
 
