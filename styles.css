@@ -886,12 +886,17 @@ footer {
 }
 
 .field-warning {
-  margin: 9px 2px 0;
+  margin: 2px 2px 0;
   color: var(--muted);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.55;
   letter-spacing: -0.02em;
+}
+
+.has-field-warning .error-message:empty {
+  min-height: 5px;
+  padding-top: 0;
 }
 
 .field .readonly-input {
@@ -1201,6 +1206,10 @@ footer {
   border-bottom: 0;
 }
 
+.cost-group {
+  border-bottom: 1px solid var(--line);
+}
+
 .cost-subrows {
   margin: 0 25px 16px 56px;
   padding: 10px 14px;
@@ -1330,6 +1339,13 @@ footer {
 
 .installment-note {
   margin-top: 12px;
+}
+
+.installment-note a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .cost-total-row {
@@ -1482,6 +1498,10 @@ footer {
     min-height: 0;
   }
 
+  .legal-fee-field {
+    margin-bottom: 14px;
+  }
+
   .rate-calculation-controls {
     grid-template-columns: minmax(92px, 0.34fr) minmax(0, 1fr);
     gap: 8px;
@@ -1523,6 +1543,30 @@ footer {
   .payment-timeline article {
     min-height: 0;
     padding: 18px;
+  }
+
+  .payment-timeline article > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .payment-timeline article > div > strong {
+    grid-column: 1 / -1;
+  }
+
+  .payment-timeline .timeline-meta {
+    min-width: 0;
+  }
+
+  .payment-timeline .timeline-basis {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .payment-timeline .timeline-date {
+    grid-column: 2;
+    grid-row: 2;
   }
 
   .payment-timeline article > b {
