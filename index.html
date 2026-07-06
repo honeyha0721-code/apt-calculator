@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="대출 원금과 금리, 기간, 상환방식을 입력해 월 상환액과 총이자를 확인하는 원리금 계산기" />
+    <meta name="description" content="대출 상환액과 아파트 매매비용을 한곳에서 계산하는 아파트 계산기" />
     <meta name="theme-color" content="#f6f7fb" />
-    <title>원리금 계산기</title>
+    <title>아파트 계산기</title>
     <link rel="stylesheet" href="./styles.css" />
     <script type="module" src="./src/main.ts"></script>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#" aria-label="원리금 계산기 처음으로">
+      <a class="brand" href="#/loan" aria-label="아파트 계산기 처음으로">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" role="img">
             <path d="M4 10.5 12 4l8 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-8Z" />
             <path d="M9 20v-6h6v6" />
           </svg>
         </span>
-        <span>원리금 계산기</span>
+        <span>아파트 계산기</span>
       </a>
       <span class="privacy-pill">
         <span class="privacy-dot" aria-hidden="true"></span>
@@ -26,7 +26,13 @@
       </span>
     </header>
 
+    <nav class="calculator-tabs" aria-label="계산기 선택">
+      <a class="calculator-tab" href="#/loan" data-route="loan" aria-current="page">대출 상환 계산</a>
+      <a class="calculator-tab" href="#/buy" data-route="buy">아파트 매매비용</a>
+    </nav>
+
     <main>
+      <div class="app-view" id="loan-view" data-view="loan">
       <section class="hero" aria-labelledby="page-title">
         <h1 id="page-title">대출, 매달 얼마씩<br class="mobile-break" /> 갚아야 할까?</h1>
       </section>
@@ -225,10 +231,193 @@
           </div>
         </div>
       </section>
+      </div>
+
+      <div class="app-view" id="buy-view" data-view="buy" hidden>
+        <section class="hero buy-hero" aria-labelledby="buy-page-title">
+          <h1 id="buy-page-title">아파트 매매 비용,<br class="mobile-break" /> 총 얼마나 들까?</h1>
+        </section>
+
+        <section class="calculator-layout buy-calculator-layout" aria-label="아파트 매매비용 계산기">
+          <form class="panel input-panel" id="buy-form" novalidate>
+            <div class="panel-heading">
+              <span class="step">01</span>
+              <div><h2>비용 항목</h2></div>
+            </div>
+
+            <div class="form-grid buy-form-grid">
+              <div class="field field-wide">
+                <label class="numbered-label" for="purchase-price"><span class="number-badge">1</span><span class="numbered-label-content">매매가액</span></label>
+                <div class="input-wrap">
+                  <input id="purchase-price" name="purchasePrice" type="number" inputmode="decimal" min="1" max="10000000" step="1" placeholder="금액 입력" aria-describedby="purchase-price-error" />
+                  <span class="input-suffix">만원</span>
+                </div>
+                <span class="error-message" id="purchase-price-error"></span>
+              </div>
+
+              <fieldset class="field field-wide method-field">
+                <legend class="numbered-label"><span class="number-badge">2</span><span class="numbered-label-content">부동산 중개수수료</span></legend>
+                <div class="rate-calculation-controls">
+                  <div class="input-wrap">
+                    <input id="brokerage-rate-input" name="brokerageRate" type="number" inputmode="decimal" min="0.2" max="0.6" step="0.1" value="0.4" aria-label="부동산 중개수수료율" aria-describedby="brokerage-rate-error" />
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <div class="input-wrap">
+                    <input class="readonly-input auto-calc-input" id="brokerage-fee-input" name="brokerageFee" type="number" inputmode="decimal" placeholder="매매가액 및 수수료율 입력 시 자동 계산" readonly aria-readonly="true" aria-label="예상 부동산 중개수수료" />
+                    <span class="input-suffix">만원</span>
+                  </div>
+                </div>
+                <span class="error-message" id="brokerage-rate-error"></span>
+              </fieldset>
+
+              <div class="field">
+                <label class="numbered-label" for="legal-base-fee"><span class="number-badge">3-1</span><span class="numbered-label-content">법무사 비용 + 등기수수료 및 잡비</span></label>
+                <div class="input-wrap">
+                  <input id="legal-base-fee" name="legalBaseFee" type="number" inputmode="decimal" min="0" max="10000" step="1" value="100" aria-describedby="legal-fee-error" />
+                  <span class="input-suffix">만원</span>
+                </div>
+                <span class="error-message" id="legal-fee-error"></span>
+              </div>
+
+              <div class="field">
+                <label class="numbered-label" for="bond-cost-input"><span class="number-badge">3-2</span><span class="numbered-label-content">국민주택채권 <small class="field-hint">(매매가액의 약 0.2%)</small></span></label>
+                <div class="input-wrap">
+                  <input class="auto-calc-input" id="bond-cost-input" name="bondCost" type="number" inputmode="decimal" min="0" max="100000" step="0.01" placeholder="매매가액 입력 시 자동 계산" aria-describedby="bond-cost-error" />
+                  <span class="input-suffix">만원</span>
+                </div>
+                <span class="error-message" id="bond-cost-error"></span>
+              </div>
+
+              <div class="field field-wide">
+                <label class="numbered-label" for="acquisition-tax-rate"><span class="number-badge">4</span><span class="numbered-label-content">취득세</span></label>
+                <div class="rate-calculation-controls">
+                  <div class="input-wrap">
+                    <input id="acquisition-tax-rate" name="acquisitionTaxRate" type="number" inputmode="decimal" min="0" max="20" step="0.1" value="3.3" aria-label="취득세율" aria-describedby="acquisition-tax-rate-error" />
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <div class="input-wrap">
+                    <input class="readonly-input auto-calc-input" id="acquisition-tax-input" name="acquisitionTax" type="number" inputmode="decimal" placeholder="매매가액 및 세율 입력 시 자동 계산" readonly aria-readonly="true" aria-label="예상 취득세" />
+                    <span class="input-suffix">만원</span>
+                  </div>
+                </div>
+                <span class="error-message" id="acquisition-tax-rate-error"></span>
+                <p class="field-warning">💸 취득세율은 보유 주택 수, 매매가액, 규제지역 여부, 취득 방식, 주택 면적 등에 따라 달라집니다.</p>
+              </div>
+            </div>
+          </form>
+
+          <section class="panel result-panel buy-result-panel" id="buy-result-panel" aria-labelledby="buy-result-title" aria-live="polite">
+            <div class="panel-heading result-heading">
+              <span class="step">02</span>
+              <div><h2 id="buy-result-title">계산 결과</h2></div>
+            </div>
+
+            <div class="buy-total-cases">
+              <article class="buy-total-case buy-total-case-primary">
+                <span>아파트 매매가액 + 부대비용<br /><em class="buy-total-case-tag tax-included">(취득세 포함 시)</em></span>
+                <strong id="buy-total-cost">—</strong>
+              </article>
+              <article class="buy-total-case">
+                <span>아파트 매매가액 + 부대비용<br /><em class="buy-total-case-tag tax-excluded">(취득세 불포함 시)</em></span>
+                <strong id="buy-total-excluding-tax">—</strong>
+              </article>
+            </div>
+
+            <dl class="summary-list buy-summary-list">
+              <div><dt>아파트 매매가액</dt><dd id="buy-purchase-total">—</dd></div>
+              <div><dt>부대비용 (취득세 포함)</dt><dd id="buy-extra-including-tax">—</dd></div>
+              <div><dt>부대비용 (취득세 불포함)</dt><dd id="buy-extra-excluding-tax">—</dd></div>
+            </dl>
+
+            <a class="tax-payment-tip" href="https://etax.seoul.go.kr/" target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">💡</span>
+              <p>취득세는 신용카드로 일시납 또는 할부 납부할 수 있으며, 할부기간과 수수료는 카드사별로 다릅니다. <strong>서울시 ETAX 홈페이지</strong></p>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+            </a>
+          </section>
+        </section>
+
+        <section class="buy-section" aria-labelledby="payment-plan-title">
+          <div class="section-heading"><h2 id="payment-plan-title">매매대금 지급 일정</h2></div>
+          <div class="payment-timeline">
+            <article>
+              <span class="timeline-step">01</span>
+              <div><strong>가계약금</strong><p class="timeline-meta timeline-date"><span>지급 시점</span>계약 의사 표시일</p><p class="timeline-meta timeline-basis"><span>계산 기준</span>매매가액의 3%</p></div>
+              <b id="provisional-deposit">—</b>
+            </article>
+            <article>
+              <span class="timeline-step">02</span>
+              <div><strong>계약금 잔액</strong><p class="timeline-meta timeline-date"><span>지급 시점</span>계약서 작성 당일</p><p class="timeline-meta timeline-basis"><span>계산 기준</span>매매가액의 7%</p></div>
+              <b id="contract-balance">—</b>
+            </article>
+            <article>
+              <span class="timeline-step">03</span>
+              <div><strong>중도금</strong><p class="timeline-meta timeline-date"><span>지급 시점</span>잔금일 약 2개월 전</p><p class="timeline-meta timeline-basis"><span>계산 기준</span>매매가액의 40%</p></div>
+              <b id="interim-payment">—</b>
+            </article>
+            <article>
+              <span class="timeline-step">04</span>
+              <div><strong>잔금</strong><p class="timeline-meta timeline-date"><span>지급 시점</span>잔금일</p><p class="timeline-meta timeline-basis"><span>계산 기준</span>매매가액의 50%</p></div>
+              <b id="final-payment">—</b>
+            </article>
+          </div>
+          <p class="buy-section-note">👉🏻 가계약금은 계약금(매매가액의 10%)에 포함하여 계약서 작성 당일에는 나머지 7%를 납부하는 것으로 가정하여 계산한 것입니다.</p>
+        </section>
+
+        <section class="buy-section" aria-labelledby="extra-cost-title">
+          <div class="section-heading"><h2 id="extra-cost-title">부대비용</h2></div>
+          <div class="cost-card">
+            <div class="cost-row">
+              <div><span>01</span><strong>부동산 중개수수료</strong><small id="brokerage-rate-label">매매가액의 0.4%</small></div>
+              <b id="brokerage-fee">—</b>
+            </div>
+            <div class="cost-group">
+              <div class="cost-row cost-group-heading">
+                <div><span>02</span><strong>법무사 수수료</strong></div>
+                <b id="legal-total">—</b>
+              </div>
+              <div class="cost-subrows">
+                <div><span>법무사 인건비 + 등기비용</span><b id="legal-base-cost">—</b></div>
+                <div><span>국민주택채권 비용</span><b id="bond-cost">—</b></div>
+              </div>
+            </div>
+            <div class="cost-row">
+              <div><span>03</span><strong>취득세</strong><small id="acquisition-rate-label">매매가액의 3.3%</small></div>
+              <b id="acquisition-tax">—</b>
+            </div>
+            <div class="cost-total-row"><span>부대비용 합계</span><strong id="extra-cost-total">—</strong></div>
+          </div>
+        </section>
+
+        <section class="buy-section tax-installment-section" aria-labelledby="tax-installment-title">
+          <div class="section-heading"><h2 id="tax-installment-title">취득세 분할 납부 계산</h2></div>
+          <div class="installment-card">
+            <div class="installment-heading">
+              <strong>분할 납부 기간</strong>
+              <p>2개월부터 6개월까지 선택할 수 있습니다.</p>
+            </div>
+            <fieldset class="installment-field">
+              <legend class="sr-only">취득세 분할 납부 기간 선택</legend>
+              <div class="installment-options">
+                <label><input type="radio" name="installmentMonths" value="2" /><span>2개월</span></label>
+                <label><input type="radio" name="installmentMonths" value="3" /><span>3개월</span></label>
+                <label><input type="radio" name="installmentMonths" value="4" /><span>4개월</span></label>
+                <label><input type="radio" name="installmentMonths" value="5" /><span>5개월</span></label>
+                <label><input type="radio" name="installmentMonths" value="6" checked /><span>6개월</span></label>
+              </div>
+            </fieldset>
+            <div class="installment-result">
+              <span><b id="installment-months-label">6개월</b> 균등 분할 시 월 납부액</span>
+              <strong id="monthly-acquisition-tax">—</strong>
+            </div>
+            <p class="installment-note">단순 균등 분할 계산이며, 실제 할부 가능 기간과 수수료는 카드사별로 다를 수 있습니다.</p>
+          </div>
+        </section>
+      </div>
     </main>
 
     <footer>
-      <p>원리금 계산기 · 모든 계산은 사용자의 기기에서 처리됩니다.</p>
+      <p>아파트 계산기 · 모든 계산은 사용자의 기기에서 처리됩니다.</p>
     </footer>
   </body>
 </html>

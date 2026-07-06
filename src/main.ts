@@ -1,4 +1,6 @@
 import { calculateLoan, type LoanResult, type PaymentRow, type RepaymentMethod } from "./calculator";
+import { initBuyCalculator } from "./buy";
+import { initRouter } from "./router";
 
 interface FormValues {
   principal: number;
@@ -155,3 +157,6 @@ scheduleToggle.addEventListener("click", () => {
   showFullSchedule = !showFullSchedule;
   renderSchedule();
 });
+
+initBuyCalculator();
+initRouter();
